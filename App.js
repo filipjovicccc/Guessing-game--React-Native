@@ -30,7 +30,17 @@ export default function App() {
   if (showGameOver) {
     screen = <GameOverScreen />;
   }
+  let screen;
 
+  if (!userNumber) {
+    screen = <StartGameScreen onPickedNumber={pickedNumberHandler} />;
+  } else if (gameIsOver) {
+    screen = <GameOverScreen />;
+  } else {
+    screen = (
+      <GameScreen userNumber={userNumber} onGameOver={gameOverHandler} />
+    );
+  }
   if (!fontsLoaded) {
     return <AppLoading />;
   }
@@ -44,13 +54,13 @@ export default function App() {
     setGameIsOver(true);
   }
 
-  let screen = <StartGameScreen onPickedNumber={pickedNumberHandler} />;
+  // let screen = <StartGameScreen onPickedNumber={pickedNumberHandler} />;
 
-  if (userNumber) {
-    screen = (
-      <GameScreen userNumber={userNumber} onGameOver={gameOverHandler} />
-    );
-  }
+  // if (userNumber) {
+  //   screen = (
+  //     <GameScreen userNumber={userNumber} onGameOver={gameOverHandler} />
+  //   );
+  // }
 
   return (
     <LinearGradient
