@@ -7,60 +7,67 @@ import GameScreen from "./screens/GameScreen";
 import Colors from "./constatnts/colors";
 import GameOverScreen from "./screens/GameOverScreen";
 import AppLoading from "expo-app-loading";
+
 export default function App() {
   const [userNumber, setUserNumber] = useState();
   const [gameIsOver, setGameIsOver] = useState(true);
   const [showGameOver, setShowGameOver] = useState(false);
+  const [guessRounds, setGuessRounds] = useState(0);
 
   const [fontsLoaded] = useFonts({
     "open-sans": require("./assets/fonts/OpenSans-Regular.ttf"),
-    "open-sans": require("./assets/fonts/OpenSans-Bold.ttf"),
+    "open-sans-bold": require("./assets/fonts/OpenSans-Bold.ttf"),
   });
 
-  useEffect(() => {
-    if (gameIsOver && userNumber) {
-      const timer = setTimeout(() => {
-        setShowGameOver(true);
-      }, 2000);
-
-      return () => clearTimeout(timer);
-    }
-  }, [gameIsOver, userNumber]);
-
-  if (showGameOver) {
-    screen = <GameOverScreen />;
-  }
-  let screen;
-
-  if (!userNumber) {
-    screen = <StartGameScreen onPickedNumber={pickedNumberHandler} />;
-  } else if (gameIsOver) {
-    screen = <GameOverScreen />;
-  } else {
-    screen = (
-      <GameScreen userNumber={userNumber} onGameOver={gameOverHandler} />
-    );
-  }
-  if (!fontsLoaded) {
-    return <AppLoading />;
+  function statrtNewGameHandler() {
+    setUserNumber(null);
+    setGuessRounds(0);
+    setShowGameOver(false);
+    setGameIsOver(true);
   }
 
   function pickedNumberHandler(pickedNumber) {
     setUserNumber(pickedNumber);
     setGameIsOver(false);
+    setShowGameOver(false);
   }
 
-  function gameOverHandler() {
+  function gameOverHandler(numOfRounds) {
     setGameIsOver(true);
+    setGuessRounds(numOfRounds);
   }
 
-  // let screen = <StartGameScreen onPickedNumber={pickedNumberHandler} />;
+  useEffect(() => {
+    if (gameIsOver && userNumber) {
+      const timer = setTimeout(() => {
+        setShowGameOver(true);
+      }, 1000);
 
-  // if (userNumber) {
-  //   screen = (
-  //     <GameScreen userNumber={userNumber} onGameOver={gameOverHandler} />
-  //   );
-  // }
+      return () => clearTimeout(timer);
+    }
+  }, [gameIsOver, userNumber]);
+
+  let screen;
+
+  if (!userNumber) {
+    screen = <StartGameScreen onPickedNumber={pickedNumberHandler} />;
+  } else if (showGameOver) {
+    screen = (
+      <GameOverScreen
+        userNumber={userNumber}
+        roundsNumber={guessRounds}
+        onStartNewGame={statrtNewGameHandler}
+      />
+    );
+  } else {
+    screen = (
+      <GameScreen userNumber={userNumber} onGameOver={gameOverHandler} />
+    );
+  }
+
+  if (!fontsLoaded) {
+    return <AppLoading />;
+  }
 
   return (
     <LinearGradient
